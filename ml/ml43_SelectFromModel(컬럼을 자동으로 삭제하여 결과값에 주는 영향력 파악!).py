@@ -15,7 +15,7 @@ x, y = load_boston(return_X_y=True) #TRUE하면 x,y 분리해서 반환해준다
 print(x.shape , y.shape) #(506, 13) (506,)
 
 x_train, x_test, y_train, y_test = train_test_split(
-    x,y,test_size=0.8, shuffle=True, random_state=66
+    x,y,train_size=0.8, shuffle=True, random_state=66
 )
 
 #2. 모델
@@ -38,12 +38,12 @@ print(thresholds) #컬럼별 크기로 정렬해준것!
 for thresh in thresholds : 
     selection = SelectFromModel(model, threshold=thresh, prefit=True)
     # thresh 이상 되는 수치를 가진 컬럼들로 모델을 구성 
-    print(selection)
+    # print(selection)
 
     select_x_train = selection.transform(x_train)
     select_x_test = selection.transform(x_test)
     #삭제한 컬럼에 맞게 x값 재구성
-    print(select_x_train.shape)
+    # print(select_x_train.shape)
 
     selection_model = XGBRegressor(n_jobs = -1)
     selection_model.fit(select_x_train, y_train)
