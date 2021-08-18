@@ -42,8 +42,6 @@ x_test = scaler.transform(x_test)
 
 parameter = [
 {"n_estimators":[1, 10, 100, 1000],"max_depth":[2,4,6,8,10],'learning_rate': [0.005,0.01,0.05,0.1,0.2],"colsample_bytree":[0.1,0.6, 0.9, 1],"colsample_bylevel":[0.6, 0.7, 0.9,0.1]}, #교차검증 해서 여기만 (4*5)20번
-#교차검증 해서 여기만 (3*1*2*5)30번
-{"n_estimators":[1, 10, 100, 1000], "gamma":[0.001, 0.0001],"max_depth":[2,4,6],'learning_rate':[0.005,0.01,0.05,0.1,0.2],"colsample_bytree":[0.6, 0.9, 1],"colsample_bylevel":[0.6, 0.7, 0.9]}#교차검증 해서 여기만 (4*1*2*5)30번
 ] # 총 ==> 90번 돌아간다!!!
 '''
 XGBRegressor(base_score=0.5, booster='gbtree', colsample_bylevel=0.9,   

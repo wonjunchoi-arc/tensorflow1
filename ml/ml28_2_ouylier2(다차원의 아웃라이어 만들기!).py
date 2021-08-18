@@ -1,16 +1,13 @@
-#이상치처리
-#1. 삭제
-#2. Nan처리후 -> 보간 //liner
-#3. ...............................(결측치 처리 방법과 유사)
-#4 scaler => Ruborsclaer, Quantile   ... 등 ....
-#5. 모델링 : tree 계열 ... DT,RF,XG, LGBM
-
-
+#실습 : 다차원 outlier가 출력 되도록
 import numpy as np
-import pandas as pd
-aaa = np.array([1,2,-1000,4,5,6,7,8,90,100,500])
+
+aaa = np.array([[1,2,3,4,10000,6,7,8,90,100,5000],
+[100,2000,3,4000,5000,6000,7000,8,9000,10000, 1001]])
+
 aaa =aaa.transpose()
 print(aaa.shape)
+
+
 
 def outliers(data_out):
     quartile_1,q2,quartile_3 = np.percentile(data_out,[25,50,75])#분위수
