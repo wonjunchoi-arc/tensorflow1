@@ -21,11 +21,11 @@ x_test = x_test.reshape(10000,28*28).astype('float32')/255
 #2. 모델
 def build_model(drop=0.5, optimizer='adam'):
     inputs = Input(shape=(28*28), name = 'input')
-    x=Dense(512, activation='relu', name='hidden1')(inputs)
+    x=Conv2D(512, activation='relu', name='hidden1')(inputs)
     x=(Dropout)(drop)(x)
-    x=Dense(256, activation='relu', name='hidden2')(inputs)
+    x=Conv2D(256, activation='relu', name='hidden2')(x)
     x=(Dropout)(drop)(x)
-    x=Dense(128, activation='relu', name='hidden3')(inputs)
+    x=Conv2D(128, activation='relu', name='hidden3')(x)
     x=(Dropout)(drop)(x)
     outputs = Dense(10, activation='softmax', name='outputs')(x)
     model =Model(inputs=inputs, outputs=outputs)
