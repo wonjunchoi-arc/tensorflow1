@@ -21,6 +21,8 @@ def outliers(data_out):
 
 outliers_loc = outliers(aaa)
 
+####################다중도 들어 갈 수 있도록 만들기!!!################
+
 print("이상치의 위치: ", outliers_loc)
 
 import matplotlib.pyplot as plt
