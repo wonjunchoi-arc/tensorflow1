@@ -22,8 +22,10 @@ print(x_train.shape,x_test.shape)
 # x_test = x_test.reshape(10000,784).astype('float')/255
 
 
-x_train = x_train.reshape(2481,224,224,3).astype('float')/255
-x_test = x_test.reshape(828,224,224,3).astype('float')/255
+x_train = x_train.reshape(2481,224,224,3).astype('float')
+x_test = x_test.reshape(828,224,224,3).astype('float')
+#255로 안나눠주는 이유는 이미지 제너레이터에서 이미 255로 나눠줬기 때문이다.
+
 
 # x_train = tf.image.resize(x_train,(224,224))
 # x_test = tf.image.resize(x_test,(224,224))
@@ -31,9 +33,9 @@ x_test = x_test.reshape(828,224,224,3).astype('float')/255
 # print(x_train.shape,x_test.shape)
 
 
-x_train_noised = x_train + np.random.normal(0, 0.0005, size=x_train.shape)
+x_train_noised = x_train + np.random.normal(0, 0.1, size=x_train.shape)
 #normal이 정규분포에 따른 랜덤값을 넣는건지 찾아보자!!
-x_test_noised = x_test + np.random.normal(0,0.0005, size=x_test.shape)
+x_test_noised = x_test + np.random.normal(0,0.1, size=x_test.shape)
 
 x_train_noised = np.clip(x_train_noised, a_min=0, a_max=1)
 x_test_noised = np.clip(x_test_noised, a_min=0, a_max=1)
@@ -90,7 +92,7 @@ model = autoencoder2(hidden_layer_size=1) # pca 95%
 
 model.compile(optimizer='adam', loss='mse')
 
-model.fit(x_train_noised, x_train, epochs =30)
+model.fit(x_train_noised, x_train, epochs =100)
 
 output = model.predict(x_test_noised)
 
@@ -106,7 +108,7 @@ random_images = random.sample(range(output.shape[0]),5)
 
 #원본(입력) 이미지를 맨 위에 그린다.
 for i, ax in enumerate([ax1, ax2, ax3, ax4, ax5]):
-    ax.imshow((x_test[random_images[i]]*255))
+    ax.imshow((x_test[random_images[i]]))
     # ax.imshow(x_test[random_images[i]].reshape(224,224,3).astype(np.uint8), cmap='gray')
     if i ==0:
         ax.set_ylabel("INPUT", size=20)
@@ -115,7 +117,7 @@ for i, ax in enumerate([ax1, ax2, ax3, ax4, ax5]):
     ax.set_yticks([])
 
 for i, ax in enumerate([ax11, ax12, ax13, ax14, ax15]):
-    ax.imshow((x_test_noised[random_images[i]]*255))
+    ax.imshow((x_test_noised[random_images[i]]))
     # ax.imshow(x_test_noised[random_images[i]].reshape(224,224,3).astype(np.uint8), cmap='gray')
     if i ==0:
         ax.set_ylabel("NOISED", size=20)
@@ -126,7 +128,7 @@ for i, ax in enumerate([ax11, ax12, ax13, ax14, ax15]):
 
 #오토인코더가 출력한 이미지를 아래에 그린다.
 for i, ax in enumerate([ax6, ax7, ax8, ax9, ax10]):
-    ax.imshow((output[random_images[i]]*255))
+    ax.imshow((output[random_images[i]]))
     print(output[random_images[i]].shape)
     print(type(output[random_images[i]]))
     print(np.max(output[random_images[i]]))
