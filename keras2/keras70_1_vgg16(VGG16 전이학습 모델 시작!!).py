@@ -11,7 +11,7 @@ VGGNet은 몇 개의 층(layer)으로 구성되어 있는지에 따라, 16개 �
 '''
 
 
-model =VGG16(weights='imagenet',include_top=False,input_shape=(100,100,3))
+model =VGG16(weights='imagenet',include_top=False, input_shape=(100,100,3))
  
  
 '''
@@ -25,7 +25,7 @@ include_top = False 하면 내가 커스터마이징 해서 쓸 수 있다는 �
 
 
 
-# 훈련을 시킬지 말지 
+# 훈련을 시킬지 말지 tip(훈련을 시킴, 안시킴으로 결과 확인)
 model.trainable=False
 
 '''
@@ -69,3 +69,25 @@ predictions (Dense)          (None, 1000)              4097000
 '''
 
 #FC = Fully Connected Layer
+'''
+FC(Fully connected layer)를 정의하자면,
+
+완전히 연결 되었다라는 뜻으로,
+
+한층의 모든 뉴런이 다음층이 모든 뉴런과 연결된 상태로
+
+2차원의 배열 형태 이미지를 1차원의 평탄화 작업을 통해 이미지를 분류하는데 사용되는 계층입니다.
+
+​
+
+1. 2차원 배열 형태의 이미지를 1차원 배열로 평탄화
+
+2. 활성화 함수(Relu, Leaky Relu, Tanh,등)뉴런을 활성화
+
+3. 분류기(Softmax) 함수로 분류
+
+​
+
+1~3과정을 Fully Connected Layer라고 말할 수 있습니다.
+[출처] [딥러닝 레이어] FC(Fully Connected Layers)이란?|작성자 인텔리즈
+'''
