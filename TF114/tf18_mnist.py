@@ -36,8 +36,8 @@ x = tf.placeholder(tf.float32, shape=[None,784])
 y = tf.placeholder(tf.float32, shape=[None,10])
 
 # #히든 레이어 1
-W = tf.Variable(tf.random.normal([784,10]), name='weight')
-b = tf.Variable(tf.random.normal([10]), name='bias')
+W = tf.Variable(tf.zeros([784,10]), name='weight')
+b = tf.Variable(tf.zeros([10]), name='bias')
 
 # hyporthesis = x * W + b # 행렬 연산 에러 발생 
 hypothesis = tf.nn.softmax(tf.matmul(x, W) + b)
@@ -54,7 +54,7 @@ reduce sum 은 그냥 전체 원소들의 더하기
 # '''
 
 
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-3)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.5)
 train = optimizer.minimize(loss)
 
 predicted = tf.equal(tf.argmax(hypothesis,1), tf.argmax(y_train, 1))
@@ -69,8 +69,9 @@ for epochs in range(100):
     if epochs % 10 == 0:
         print(epochs, "cost :", cost_val, "\n", hy_val)
 
-h, c, a = sess.run([hypothesis, predicted, accuracy], feed_dict = {x:x_train,y:y_train})
-print("\npredict : \n" ,c , "\n Accuarcy : ",a)
+# h, c, a = sess.run([hypothesis, predicted, accuracy], feed_dict = {x:x_train,y:y_train})
+# print("\npredict : \n" ,c , "\n Accuarcy : ",a)
+print(accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels}))
 
 
 
