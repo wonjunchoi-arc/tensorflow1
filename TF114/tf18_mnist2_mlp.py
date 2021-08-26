@@ -29,7 +29,7 @@ y = tf.placeholder(tf.float32, shape=[None,10])
 # #히든 레이어 1
 W1 = tf.Variable(tf.random_normal([784,10],stddev=0.1), name='weight')
 b1 = tf.Variable(tf.zeros([10]), name='bias')
-
+#stddev = 표본을 사용하여 표준편차를 추정합니다. 가중치라 너무 크지않게 조절해줌 !!
 
 # 히든 레이어4
 W2 = tf.Variable(tf.random_normal([10,10],stddev=0.1), name='weight')
