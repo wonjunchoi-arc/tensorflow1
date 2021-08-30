@@ -1,3 +1,4 @@
+from numpy.lib.function_base import average
 import tensorflow as tf
 import numpy as np
 from tensorflow.python.ops.gen_batch_ops import batch
@@ -17,7 +18,7 @@ x_train = x_train.reshape(60000, 28, 28,1).astype('float32')/255
 x_test = x_test.reshape(10000, 28, 28,1).astype('float32')/255
 
 learning_rate = 0.001
-training_epochs = 15
+training_epochs = 3
 batch_size = 100
 total_batch =int(len(x_train)/batch_size)
 
@@ -53,7 +54,8 @@ print(L3_maxpool)
 
 #layer 4
 
-W4 =tf.get_variable('w4', shape=[2 ,2 ,128 ,64])
+W4 =tf.get_variable('w4', shape=[2 ,2 ,128 ,64],initializer = tf.contrib.layers.xavier_initializer())
+#초반에 너무 큰 가중치가 들어가서 터질경우 등에 대하여 가중치를 초기화해주는 것이다!!
 L4 = tf.nn.conv2d(L3_maxpool, W4, strides=[1,1,1,1], padding='SAME')
 L4= tf.nn.leaky_relu(L4)
 L4_maxpool = tf.nn.max_pool(L4, ksize=[1,2,2,1], strides=[1,2,2,1],padding='SAME')
@@ -96,6 +98,39 @@ print(hypothesis)
 
 
 
-# model = Sequential()
-# model.add(Conv2D(filters=32, kernel_size=(3,3), strides=1,
-# padding='same', input_shape=(28,28,1)))
+#3.모델 컴파일, 훈련
+
+
+loss = tf.reduce_mean(-tf.reduce_sum(y*tf.log(hypothesis), axis=1))
+# optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.01)
+# train = optimizer.minimize(loss)
+
+optimizers = tf.train.GradientDescentOptimizer(learning_rate=0.01).minimize
+optimizers = tf.train.AdadeltaOptimizer(learning_rate=learning_rate).minimize(loss)
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+for epoch in range(training_epochs):
+    average_loss = 0
+    #아래는 1epoch돌리기
+    for i in range(total_batch) :
+        start = i *batch_size
+        end = start + batch_size
+        batch_x, batch_y = x_train[start:end], y_train[start:end]
+        ###배치 크기별로 짤라서 훈련시켜주는 작업이다!!
+
+        feed_dict = {x:batch_x, y:batch_y}
+
+        batch_loss,__ = sess.run([loss, optimizers], feed_dict=feed_dict)
+
+        average_loss += batch_loss/total_batch
+    
+    print('Epoch:','%04d' %(epoch +1), 'loss: {:.9f}'.format(average_loss))
+print("훈련 끘!!!")
+
+
+is_correct = tf.equal(tf.argmax(hypothesis, 1), tf.argmax(y, 1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+#cast 소수점을 빼준다!
+print('ACC:',sess.run(accuracy,feed_dict={x:x_test, y:y_test}))

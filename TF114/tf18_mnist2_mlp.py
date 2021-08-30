@@ -70,7 +70,7 @@ for epochs in range(100):
         print(epochs, "cost :", cost_val, "\n", hy_val)
 
 
-is_correct = tf.equal(tf.argmax(layer4, 1), tf.argmax(y, 1))
+is_correct = tf.equal(tf.c(layer4, 1), tf.argmax(y, 1))
 accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
 print('정확도:', sess.run(accuracy,
                         feed_dict={x: x_test,
