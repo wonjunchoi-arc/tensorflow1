@@ -15,7 +15,7 @@ labels = np.array([1,1,1,1,1,0,0,0,0,0,0,1,1])
 token = Tokenizer()
 token.fit_on_texts(docs)
 print(token.word_index)
-
+"""
 '''
 {'참': 1, '너무': 2, '잘': 3, '재밋어요': 4, '최고에요': 5, '만든': 6, '영화예요': 7, '
 추천하고': 8, '싶은': 9, '영화입니다': 10, '한': 11, '번': 12, '더': 13, '보고': 14, '싶
@@ -136,3 +136,4 @@ model.fit(pad_x, labels, epochs=100, batch_size=1)
 #4. 평가
 acc = model.evaluate(pad_x, labels)[1]
 print('acc:', acc)
+"""

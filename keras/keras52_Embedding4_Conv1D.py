@@ -92,7 +92,7 @@ dense (Dense)                (None, 1)                 33
 '''
 
 
-
+"""
 model = Sequential()
 model.add(Embedding(28, 10, input_length=5))
 model.add(Conv1D(4,2))
@@ -123,3 +123,4 @@ model.fit(pad_x, labels, epochs=100, batch_size=1)
 #4. 평가
 acc = model.evaluate(pad_x, labels)[1]
 print('acc:', acc)
+"""
