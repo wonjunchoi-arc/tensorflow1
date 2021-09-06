@@ -41,17 +41,19 @@ for i in x :
 
 token.fit_on_texts(smiles_tok)
 
-# test_tok= []
-# for i in x_test : 
-#     smiles_tok.append(spe.tokenize(i))
+test_tok= []
+for i in x_test : 
+    test_tok.append(spe.tokenize(i))
 
 # token.fit_on_texts(smiles_tok)
 # token.fit_on_texts(test_tok)
 
 
 seq = token.texts_to_sequences(smiles_tok)
-# test_seq = token.texts_to_sequences(test_tok)
-# print(seq)
+test_seq = token.texts_to_sequences(test_tok)
+# print(seq.shape)
+# print(test_seq.shape)
+
 
 print("Smiles 최대길이:" ,max(len(i) for i in seq)) #102
 print("Smiles 평균길이:", sum(map(len, seq)) /len(seq)) # 13
@@ -61,7 +63,8 @@ print("단어의 개수는:" ,max(seq)) #13
 
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-seq = pad_sequences(seq, maxlen=102, padding='pre',)
+seq = pad_sequences(seq, maxlen=110, padding='pre',)
+test_seq = pad_sequences(test_seq, maxlen=110, padding='pre',)
 
 
 print(seq.shape) 
@@ -92,9 +95,11 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 imgs = np.load('./_save/_npy/image/dacon3_x.npy')
+imgs_test = np.load('./_save/_npy/image/dacon3_x_test.npy')
 print(imgs.shape)
 
 img = imgs.reshape(30345,128,128,3).astype('float')
+imgs_test = imgs_test.reshape(602,128,128,3).astype('float')
 print(type(y))
 
 y= np.array(y)
@@ -146,18 +151,18 @@ print(x1.shape)
 x2=Reshape((-1,x1.shape[3]))(x1)
 print(x2.shape)
 # (None, 8192, 4)
-x3 =Flatten()(x2)
+# x3 =Flatten()(x2)
 # print(x3.shape)
-x4=Dropout(0.1)(x3)
-x5=Dense(2048, activation='relu')(x4)
-output=Dense(512, activation='relu')(x5)
-output1=Reshape((4,128))(output)
-print('너는 또 뭐야 시벙',output1)
+# x4=Dropout(0.1)(x3)
+# x5=Dense(2048, activation='relu')(x4)
+# output=Dense(512, activation='relu')(x5)
+# output1=Reshape((4,128))(output)
+print('너는 또 뭐야 시벙',x2)
 #shape=(None, 8192, 256)
 
-input2 = Input(shape=(102,))
-x=Embedding(input_dim = 2000, output_dim=128, input_length=102)(input2)
-output2=Dropout(0.1)(x)
+input2 = Input(shape=(110,))
+x=Embedding(input_dim = 1000, output_dim=4, input_length=110)(input2)
+output2=Dropout(0.2)(x)
 print('여기 뭐가나오나 보자',output2)
 #(shape=(None, 102, 256)
 
@@ -165,15 +170,16 @@ print('여기 뭐가나오나 보자',output2)
 from tensorflow.keras.layers import concatenate, Concatenate,LSTM,Reshape
 # 소문자는 메소드, 대문자는 클래스를 불러오는 것이다. 그러나 둘중 하나는 예전에 쓰던 것일 수 도 있기에 새로운 기능을 사용하지 못할 수 도 있다. 
 
-merge1 = Concatenate(axis=1)([output1, output2])
+merge1 = Concatenate(axis=1)([x2, output2])
 print(merge1) #shape=(None, 8294, 256)
-merge2 = Bidirectional(LSTM(256,return_sequences=True))(merge1)
+merge2 = Bidirectional(LSTM(64,return_sequences=False))(merge1)
 merge3= Dropout(0.2)(merge2)
-merge4 = Bidirectional(LSTM(128))(merge3)
+# merge4 = Bidirectional(LSTM(64))(merge3)
 print('LSTM의 모양',merge2.shape)
-merge5= Dropout(0.2)(merge4)
-merge6= Dense(20000, activation='relu')(merge5)
-last_output= Dense(1, activation='relu')(merge6)
+# merge5= Dropout(0.2)(merge3)
+merge6= Dense(22400, activation='relu')(merge3)
+merge7= Dropout(0.2)(merge6)
+last_output= Dense(1, activation='relu')(merge7)
 
 model = Model(inputs=[input1, input2], outputs=last_output)
 
@@ -188,18 +194,18 @@ print(x_smile_train.shape)
 
 import time
 start_time = time.time()
-optimizer =tf.keras.optimizers.Adam(learning_rate=0.0001)
+optimizer =tf.keras.optimizers.Adam(learning_rate=0.0005)
 model.compile(loss='mae', optimizer=optimizer,) 
-model.fit([img_train,x_smile_train],y_train, epochs=20, batch_size=56,validation_data=([img_val,x_smile_val],y_val),
+model.fit([img_train,x_smile_train],y_train, epochs=25, batch_size=40,validation_data=([img_val,x_smile_val],y_val),
 #validation_data=([x_test, y_test], [y_test, x_test]), 벨리데이션 데이터 오류 튜플로 !!
 verbose=1,callbacks=[es])
 model.summary()
 end_time = time.time() - start_time
 
 
-y_predict = model.predict(x_test)
+y_predict = model.predict([imgs_test,test_seq])
 submission['ST1_GAP(eV)'] = y_predict
-submission.to_csv('/content/drive/MyDrive/dacon3/dacon_baseline.csv', index=False)
+submission.to_csv('../data/dacon3/dacon_baseline.csv', index=False)
 
 
 '''
