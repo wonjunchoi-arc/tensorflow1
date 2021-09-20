@@ -34,8 +34,8 @@ def get_opt():
     parser.add_argument('--checkpoint', type=str, default='', help='model checkpoint for initialization')
     parser.add_argument("--display_count", type=int, default = 20)
     parser.add_argument("--save_count", type=int, default = 100)
-    parser.add_argument("--keep_step", type=int, default = 100000)
-    parser.add_argument("--decay_step", type=int, default = 100000)
+    parser.add_argument("--keep_step", type=int, default = 1)
+    parser.add_argument("--decay_step", type=int, default = 1)#100000)
     parser.add_argument("--shuffle", action='store_true', help='shuffle input data')
 
     opt = parser.parse_args()
@@ -66,7 +66,7 @@ def train_gmm(opt, train_loader, model, board):
         cm = inputs['cloth_mask'].cuda()
         im_c =  inputs['parse_cloth'].cuda()
         im_g = inputs['grid_image'].cuda()
-            
+
         grid, theta = model(agnostic, c)
         warped_cloth = F.grid_sample(c, grid, padding_mode='border')
         warped_mask = F.grid_sample(cm, grid, padding_mode='zeros')

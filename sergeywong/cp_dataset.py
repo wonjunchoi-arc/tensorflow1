@@ -89,6 +89,7 @@ class CPDataset(data.Dataset):
         # person image 
         im = Image.open(osp.join(self.data_path, 'image', im_name))
         im = self.transform(im) # [-1,1]
+        # print(im.size())
         
         
         # load parsing image
@@ -128,13 +129,14 @@ class CPDataset(data.Dataset):
 
         # upper cloth
         im_c = im * pcm + (1 - pcm) # [-1,1], fill 1 for other parts 나머지부분은 1이되고 채워져있는 부분은 0을 더해주네
-        im_h = im * phead - (1 - phead) # [-1,1], fill 0 for other parts
+        im_h = im * phead - (1 - phead) # [-1,1], fill 0 for other parts 얼굴만 나온다 둥둥
+
 
         # load pose points
         pose_name = im_name.replace('.jpg', '_keypoints.json')
         with open(osp.join(self.data_path, 'pose', pose_name), 'r') as f:
             pose_label = json.load(f)
-            print(pose_label)
+            # print(pose_label)
             '''
             {'version': 1.0, 'people': [{'face_keypoints': [], 
             'pose_keypoints': [79.1181102362205, 40.7272727272727, 0.907790213823318, 87.6850393700787, 91.2290909090909, 0.654397651553154, 49.3858267716535, 93.5563636363636, 0.493277914822102, 45.8582677165354, 153.6, 0.713929876685143, 29.9842519685039, 178.501818181818, 0.802610471844673, 127.748031496063, 87.5054545454545, 0.526449844241142, 142.614173228346, 159.650909090909, 0.792855083942413, 119.181102362205, 201.076363636364, 0.495145117864013, 42.8346456692913, 214.341818181818, 0.244836983649293, 0, 0, 0, 0, 0, 0, 92.7244094488189, 222.254545454545, 0.226115419587586, 0, 0, 0, 0, 0, 0, 70.0472440944882, 31.1854545454545, 0.96220988035202, 89.9527559055118, 31.8836363636364, 0.945377916097641, 58.7086614173228, 36.7709090909091, 0.656627222895622, 103.307086614173, 40.0290909090909, 0.842052668333054], 
@@ -143,7 +145,7 @@ class CPDataset(data.Dataset):
             '''
             pose_data = pose_label['people'][0]['pose_keypoints']
             pose_data = np.array(pose_data)
-            print(pose_data.shape) #(54,)
+            # print(pose_data.shape) #(54,)
             pose_data = pose_data.reshape((-1,3))
             # print(pose_data.shape) #(18, 3)
 
@@ -165,9 +167,11 @@ class CPDataset(data.Dataset):
                 pose_draw.rectangle((pointx-r, pointy-r, pointx+r, pointy+r), 'white', 'white')
             # im_pose.show()
             one_map = self.transform(one_map)
+            # print(one_map.shape) #torch.Size([1, 256, 192])
             pose_map[i] = one_map[0]
+        # print(pose_map.shape) #torch.Size([18, 256, 192])
 
-        im_pose.show()
+        # im_pose.show()
         
         # just for visualization
         im_pose = self.transform(im_pose)
