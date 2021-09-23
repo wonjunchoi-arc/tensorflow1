@@ -25,12 +25,12 @@ class CPDataset(data.Dataset):
         self.fine_width = opt.fine_width
         self.radius = opt.radius
         self.data_path = osp.join(opt.dataroot, opt.datamode)
-        # self.transform = transforms.Compose([
-        #         transforms.ToTensor(),   \
-        #         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        self.transform = transforms.Compose([  \
+        self.transform = transforms.Compose([
                 transforms.ToTensor(),   \
-                transforms.Normalize((0.5,), (0.5,))]) #위에 to tensor를 정규화 0~1사이라고 생가갛고 노말라이즈가 -1~1범위로 표준화하여 아웃라이어를 제거해주는 것
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        # self.transform = transforms.Compose([  \
+        #         transforms.ToTensor(),   \
+        #         transforms.Normalize((0.5,), (0.5,))]) #위에 to tensor를 정규화 0~1사이라고 생가갛고 노말라이즈가 -1~1범위로 표준화하여 아웃라이어를 제거해주는 것
         
         # load data list
         im_names = []
@@ -177,7 +177,29 @@ class CPDataset(data.Dataset):
         im_pose = self.transform(im_pose)
         
         # cloth-agnostic representation
+        # print('쉐이프는?',shape.size())
+        # print('아이엠H는?',im_h.size())
+        # print('포즈맵은?',pose_map.size())
+
+        '''
+        쉐이프는? torch.Size([1, 256, 192]) 희미해진 이미지
+        아이엠H는? torch.Size([3, 256, 192]) 얼굴 이미지
+        포즈맵은? torch.Size([18, 256, 192]) 점찍힌거 18장 모아놓은거
+        '''
+
         agnostic = torch.cat([shape, im_h, pose_map], 0) 
+
+        '''
+        예시
+        batch_size, N, K = 3, 10, 256
+
+        x = torch.rand(batch_size, N, K) # [M, N, K]
+        y = torch.rand(batch_size, N, K) # [M, N, K]
+
+        output1 = torch.cat([x,y], dim=1) #[M, N+N, K]
+        output2 = torch.cat([x,y], dim=2) #[M, N, K+K]
+        
+        '''
 
         if self.stage == 'GMM':
             im_g = Image.open('sergeywong/grid.png')

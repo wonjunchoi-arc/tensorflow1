@@ -24,6 +24,23 @@ def weights_init_normal(m): #경우에 따라서 아래의 값들로 가중치�
     elif classname.find('BatchNorm2d') != -1:
         init.normal_(m.weight.data, 1.0, 0.02)
         init.constant_(m.bias.data, 0.0)
+'''
+https://yngie-c.github.io/deep%20learning/2020/03/17/parameter_init/
+Zero initialization
+가장 먼저 떠오르는 생각은 “모든 파라미터 값을 0으로 놓고 시작하면 되지 않을까?” 입니다. 하지만 이는 너무나도 단순한 생각입니다. 
+좀 더 자세히 말하자면 신경망의 파라미터가 모두 같아서는 안됩니다.
+
+파라미터의 값이 모두 같다면 역전파(Back propagation)를 통해서 갱신하더라도 모두 같은 값으로 변하게됩니다. 
+신경망 노드의 파라미터가 모두 동일하다면 여러 개의 노드로 신경망을 구성하는 의미가 사라집니다. 결과적으로 층마다 한 개의 노드만을 배치하는 것과 같기 때문이지요. 그래서 초깃값은 무작위로 설정해야 합니다.
+
+Random Initialization
+파라미터에 다른 값을 부여하기 위해서 가장 쉽게 생각해 볼 수 있는 방법은 확률분포를 사용하는 것이지요. 정규분포를 이루는 값을 각 가중치에 배정하여 모두 다르게 설정할 수 있습니다. 표준편차를 다르게 설정하면서 정규분포로 가중치를 초기화한 신경망의 활성화 함수 출력 값을 시각화해보겠습니다. 신경망은 100개의 노드를 5층으로 쌓았습니다.
+
+먼저 표준편차가 1인 케이스를 알아보겠습니다. 활성화 함수로는 시그모이드(로지스틱) 함수를 사용하였습니다.
+
+
+
+'''
 
 
 def weights_init_xavier(m):
@@ -67,6 +84,7 @@ class FeatureExtraction(nn.Module):
         super(FeatureExtraction, self).__init__()
         downconv = nn.Conv2d(input_nc, ngf, kernel_size=4, stride=2, padding=1) #ngf 다음 node숫자
         model = [downconv, nn.ReLU(True), norm_layer(ngf)]
+        #BatchNorm2d 얘가 인풋의 정규분포대로 아웃풋의 정규분포가 나올수 있게 가중치들의 수치를 조절해주는것 즉 가중치가 한쪽으로 너무 치우치지 않게 해주는것 
         for i in range(n_layers):
             in_ngf = 2**i * ngf if 2**i * ngf < 512 else 512
             out_ngf = 2**(i+1) * ngf if 2**i * ngf < 512 else 512
@@ -77,7 +95,8 @@ class FeatureExtraction(nn.Module):
         model += [norm_layer(512)]
         model += [nn.Conv2d(512, 512, kernel_size=3, stride=1, padding=1), nn.ReLU(True)]
         self.model = nn.Sequential(*model)
-        init_weights(self.model, init_type='normal')
+        init_weights(self.model, init_type='normal')  #여기 이코드는 모델을 불러올 때 마다 가중치를 랜덤값으로 설정하는데 그 초기 가중치 값을 위의 코드를 통해서 어느정도
+        #우리가 설정해주겠다는 것임
 
     def forward(self, x):
         
@@ -331,7 +350,7 @@ class TpsGridGen(nn.Module):
 
         L = torch.cat((torch.cat((K,P),1),torch.cat((P.transpose(0,1),Z),1)),0)
         Li = torch.inverse(L)
-        print('Li는 뭐지??',Li)
+        # print('Li는 뭐지??',Li)
         if self.use_cuda:
             Li = Li.cuda()
         return Li
@@ -548,6 +567,7 @@ class GMM(nn.Module):
         self.gridGen = TpsGridGen(opt.fine_height, opt.fine_width, use_cuda=True, grid_size=opt.grid_size)
         
     def forward(self, inputA, inputB):
+        # print('인풋A는',inputA.size())
         featureA = self.extractionA(inputA)
         featureB = self.extractionB(inputB)
         featureA = self.l2norm(featureA)

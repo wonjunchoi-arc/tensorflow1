@@ -67,8 +67,8 @@ def train_gmm(opt, train_loader, model, board):
         im_c =  inputs['parse_cloth'].cuda()
         im_g = inputs['grid_image'].cuda()
 
-        grid, theta = model(agnostic, c)
-        warped_cloth = F.grid_sample(c, grid, padding_mode='border')
+        grid, theta = model(agnostic, c) 
+        warped_cloth = F.grid_sample(c, grid, padding_mode='border') #grid_sample 인풋의 값과 그리드의 픽셀의 위치를 받아 결과값 계산
         warped_mask = F.grid_sample(cm, grid, padding_mode='zeros')
         warped_grid = F.grid_sample(im_g, grid, padding_mode='zeros')
 
